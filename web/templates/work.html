@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+
+
+    <title>长江信达-水利云平台</title>
+    <link href="/static/lib/bootstrap.css" rel="stylesheet">
+    <link href="/static/lib/metro.css" rel="stylesheet">
+    <link href="/static/lib/metro-icons.css" rel="stylesheet">
+  
+    <script src="/static/lib/jquery.js" /></script>
+    <script src='/static/lib/bootstrap.js'></script>
+    <script src="/static/lib/metro.js"></script> 
+  </head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">长江信达云平台</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active" style="font-size:14px"><a href="/work/">工作区</a></li>
+            <li style="font-size:14px"><a href="/setting/">设置</a></li>
+            <li style="font-size:14px"><a href="/help/">帮助</a></li>
+            {% if role_id == 1  %} 
+            <li id='admin' style="font-size:14px;"><a href="/admin/">后台管理</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+   <div class="container metro" style="margin-top: 70px">
+        <div class="row">
+            <div class="col-sm-4 col-md-2">
+                 <div class="tile bg-darkRed fg-white">
+                    <div class="tile-content iconic">   
+                        <span class="icon mif-contacts-dialer"></span>
+                        <span class="tile-label">通讯录</span>
+
+                    </div>
+                </div>
+            </div>
+           
+            <div class="col-sm-4 col-md-2">
+                <div class="tile bg-blue fg-white">
+                <div class="tile-content iconic">   
+                    <span class="icon mif-list"></span>
+                    <span class="tile-label">新闻公告</span>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4 col-md-2">
+                <div class="tile bg-blue fg-white">
+                <div class="tile-content iconic">   
+                    <span class="icon mif-image"></span>
+                    <span class="tile-label">相册</span>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4 col-md-2">
+                <div class="tile bg-darkOrange fg-white">
+                <div class="tile-content iconic">   
+                    <span class="icon mif-file-text"></span>
+                    <span class="tile-label">个人文档</span>
+                </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm-4 col-md-2">
+                <div class="tile bg-green fg-white">
+                <div class="tile-content iconic">   
+                    <span class="icon mif-mail"></span>
+                    <span class="tile-label">个人邮件</span>
+                </div>
+                </div>
+            </div>
+            
+            <div class="col-sm-4 col-md-2">
+                <div class="tile bg-blue fg-white">
+                <div class="tile-content iconic">   
+                    <span class="icon mif-info"></span>
+                    <span class="tile-label">消息中心</span>
+                </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</body>

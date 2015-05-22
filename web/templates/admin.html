@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+
+
+    <title>长江信达-水利云平台</title>
+    <link href="/static/lib/bootstrap.css" rel="stylesheet">
+    <link href="/static/lib/dashboard.css" rel="stylesheet">
+    <link href="/static/lib/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/static/lib/bootstrap-dialog.css" rel="stylesheet">
+
+
+
+  
+    <script src="/static/lib/jquery.js" /></script>
+    <script src='/static/lib/bootstrap.js'></script>
+
+    <script src='/static/lib/bootstrap-treeview.js'></script>
+    <script src='/static/lib/bootstrap-dialog.js'></script>
+    <script src='/static/lib/jquery.bootstrap.min.js'></script>
+ 
+  </head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">长江信达云平台</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li style="font-size:14px"><a href="/work/">工作区</a></li>
+            <li style="font-size:14px"><a href="/setting/">设置</a></li>
+            <li style="font-size:14px"><a href="/help/">帮助</a></li>
+            {% if role_id == 1  %} 
+            <li class="active" style="font-size:14px;"><a href="/admin/">后台管理</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+<div class="container" style="margin-top: 50px">
+
+     <div class="row">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="#home" data-toggle="tab" >用户管理</a></li>
+            <li role="presentation"><a href="#global" data-toggle="tab">全局管理</a></li>
+            <li role="presentation"><a href="#app" data-toggle="tab">应用管理</a></li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <div id="admin_content"></div>
+    </div>
+</div>
+
+<div id="myTabContent" class="tab-content">
+   <div class="tab-pane fade in active" id="home">
+    <div class="container" style="margin-top: 50px">
+        <div class="col-md-3"> 
+        <div class="form-group">
+            <button id='btnAddDept' class="btn btn-primary" >新建部门</button>
+            <button id='btnDelDept' class="btn btn-danger">删除部门</button>
+            <button id='btnModifyDept' class="btn btn-default">修改部门</button>
+        </div>
+
+        <div id="tree" class="row"></div>
+        </div>
+    
+        <div class="col-md-8 col-md-offset-1">
+        <div class="row">
+        <div class="form-group">
+            <button id='btnAddUser' class="btn btn-primary">新增人员</button>
+            <button id='btnDelUser' class="btn btn-danger">删除人员</button>
+            <button id='btnUpdateUser' class="btn btn-default">修改人员</button>
+        </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table id="tablewrap" class="table table-hover"></table>
+            </div>
+        </div>
+
+        </div>
+
+    </div>
+   </div>
+   <div class="tab-pane fade" id="global">
+     <div class="container" style="margin-top: 50px">
+ 
+      <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
+      TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。</p>
+     </div>
+   </div>
+   <div class="tab-pane fade" id="app">
+     <div class="container" style="margin-top: 50px">
+ 
+      <p>应用管理系统</p>
+     </div>
+
+
+   </div>
+</div>
+
+<div id='hiden' style="display:none" > 
+    <div id='addDept' class="row">
+    <form id='addDeptForm' role='form'> 
+           {% csrf_token %} 
+            <div class="form-group row">
+                <label for='org_name' class="col-sm-2 control-label" >部门名称</label> 
+                <div class="col-sm-6">
+                    <input type='text' class='form-control' id='sub_org_name' placeholder='例如:技术部' /> 
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for='org_short_name' class="col-sm-2 control-label">部门简称</label> 
+                <div class="col-sm-6">
+                    <input type='text' class='form-control' id='sub_org_short_name'/> 
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for='org' class="col-sm-2 control-label">上级部门</label>
+                <div class="col-sm-6">
+                    <input type='text' class='form-control' id='org_name' readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-danger" type="button" onclick='select_dept("dept")'>更改</button>
+                </div>
+                <input id='org_id' type='hidden' class='form-control'/> 
+            </div>
+    </form>
+    </div>
+
+
+    <div id='addUser' class="row">
+    <form id='addUserForm' role='form'> 
+      {% csrf_token %} 
+      <div class="form-group row">
+        <label for='user_name' class="col-sm-2 col-sm-offset-2 control-label" >用户姓名</label> 
+        <div class="col-sm-6">
+          <input type='text' class='form-control' id='user_name' /> 
+         </div>
+      </div>
+      <div class="form-group row">
+         <label for='email' class="col-sm-2 col-sm-offset-2 control-label">邮箱</label> 
+         <div class="col-sm-6">
+           <input type='email' class='form-control' id='email'/> 
+         </div>
+      </div>
+
+      <div class="form-group row">
+         <label for='mobile_number' class="col-sm-2 col-sm-offset-2 control-label">手机</label>
+         <div class="col-sm-6">
+           <input type='tel' class='form-control' id='mobile_number'/> 
+         </div>
+      </div>
+
+      <div class="form-group row">
+         <label for='id_number' class="col-sm-2 col-sm-offset-2 control-label">身份证</label>
+         <div class="col-sm-6">
+           <input type='text' class='form-control' id='id_number'/> 
+         </div>
+      </div>
+
+      <div class="form-group row">
+         <label for='org' class="col-sm-2 col-sm-offset-2 control-label">部门</label>
+         <div class="col-sm-6">
+            <input type='text' class='form-control' id='parent_org_name' readonly/>
+         </div>
+         <div class="col-sm-2">
+            <button class="btn btn-danger" type="button" onclick='select_dept("user")'>更改</button>
+         </div>
+         <input id='parent_org_id' type='hidden' class='form-control'/> 
+      </div>
+
+
+      
+      <div class="form-group row">
+         <label for='job_title' class="col-sm-2 col-sm-offset-2 control-label">职位</label>
+         <div class="col-sm-6">
+           <input type='text' class='form-control' id='job_title'/> 
+         </div>
+      </div>
+
+
+      <div class="form-group row">
+        <label for='job_type' class="col-sm-2 col-sm-offset-2 control-label">职位类型</label>
+         
+        <div class="col-sm-6">
+        <select class="form-control" id='job_type'>
+          <option>全职</option>
+          <option>兼职</option>
+        </select>
+        </div>
+      </div>
+
+
+
+      <div class="form-group row">
+        <label for='role' class="col-sm-2 col-sm-offset-2 control-label">角色</label>
+         
+        <div class="col-sm-6">
+        <select class="form-control" id="role">
+          <option>普通用户</option>
+          <option>部门管理员</option>
+          <option>系统管理员</option>
+        </select>
+        </div>
+      </div>
+
+
+
+    </form>
+    </div>
+
+    <div id="select_dept_tree" class="row">
+
+    </div>
+
+
+</div>
+
+
+<script type="text/javascript">
+
+    function select_dept(type)
+    {   var url = "/get_department_set/?org_id="+ {{ company_id }};
+        $.get( url,
+            function(data,status)
+            {
+                var org_tree = eval("("+data+")");
+                console.log('org_tree:' + org_tree);
+                $('#select_dept_tree').treeview({data: org_tree,
+                   
+                   onNodeSelected: function(event, data) {  
+                        var selected = $('#select_dept_tree').treeview('getSelected');
+                        org_id = selected[0].org_id;
+                        generate_org_user_list(org_id); 
+                    }
+
+                });
+                $('#select_dept_tree').treeview('selectNode',[ 0,{silent:true}]);
+            }
+        );
+
+        $('#select_dept_tree').dialog(
+        {
+             title:  '选择部门'
+           , buttons: 
+                {
+                    "提交": function() 
+                        {
+                            var selected = $('#select_dept_tree').treeview('getSelected');
+                            var org_name = selected[0].text;
+                            var org_id = selected[0].org_id;
+    
+                            if (type == 'dept')
+                            {
+                                $('#org_name').val(org_name);
+                                $('#org_id').val(org_id)
+                            }
+                            else if (type== 'user')
+                            {
+                                $('#parent_org_name').val(org_name);
+                                $('#parent_org_id').val(org_id)
+                            }
+                            $(this).dialog("close");
+                        }
+                }
+            , dialogClass : "modal-lg"
+        });
+    }
+
+    function generate_org_tree()
+    {
+        var url = "/get_department_set/?org_id="+ {{ company_id }};
+        $.get( url,
+            function(data,status)
+            {
+                var org_tree = eval("("+data+")");
+                console.log('org_tree:' + org_tree);
+                $('#tree').treeview({data: org_tree,
+                 onNodeSelected: function(event, data) {  
+                        var selected = $('#tree').treeview('getSelected');
+                        org_id = selected[0].org_id;
+                        generate_org_user_list(org_id); 
+                    }
+
+                });
+                $('#tree').treeview('selectNode',[ 0,{silent:true}]);
+            }
+        );
+    }
+
+
+    function generate_org_user_list(org_id)
+    {
+        var url = "/get_department_user_set/?org_id="+ org_id;
+        $.get( url,
+            function(data,status)
+            {
+                var org_user_list = eval("("+data+")");
+                console.log(org_user_list);
+       
+            var $table = $('#tablewrap');
+            $table.datagrid({
+                columns:[[
+                    {title: "姓名", field: "name"}
+                  , {title: "角色", field: "role"}
+                  //, {title: "部门", field: "org"}
+                  , {title: "职务", field: "job_title", hidden:true}
+                  //, {title: "类别", field: "job_type"}
+                  , {title: "手机", field: "mobile_number"}
+                  //, {title: "身份证", field: "id_number"}
+                  , {title: "邮箱", field: "email"}
+                  , {title: "状态", field: "status"}
+                ]]
+                , singleSelect:  true //false allow multi select
+            }).datagrid("loadData", {rows: org_user_list});
+
+            }
+        );
+ 
+    }
+    
+    function get_role_id(data)
+    {
+        console.log("data is " + data);
+        if (data == '系统管理员')
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+
+    function get_job_type(data)
+    {
+        if (data == '全职')
+        {
+            return 0;
+        }
+        else if (data == '兼职')
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+
+
+
+ 
+    function refresh_org_tree(nodeId)
+    {
+        $.get("/get_department_set/?org_id="+{{ company_id }},
+            function(data,status){
+              var org_tree = eval("("+data+")");
+              $('#tree').treeview({data: org_tree,     
+                         onNodeSelected: function(event, data) {  
+                            var selected = $('#tree').treeview('getSelected');
+                            org_id = selected[0].org_id;
+                            generate_org_user_list(org_id); 
+                         }
+              });
+              $('#tree').treeview('revealNode',[nodeId,{silent:true}]); 
+              $('#tree').treeview('selectNode',[ nodeId,{silent:true}]);
+              $('#tree').treeview('expandNode',[nodeId,{level:1,silent:true}]);       
+              }
+         ); 
+    }
+
+    function refresh_org_user_list(org_id)
+    {
+        console.log(org_id); 
+        var url = "/get_department_user_set/?org_id="+ org_id ;
+
+        $.get( url,
+            function(data,status)
+            {
+                var org_user_list = eval("("+data+")");
+                console.log(org_user_list);
+       
+                var $table = $('#tablewrap');
+                $table.datagrid({
+                columns:[[
+                    {title: "姓名", field: "name"}
+                  , {title: "角色", field: "role"}
+                  , {title: "部门", field: "org"}
+                  , {title: "职务", field: "job_title"}
+                  , {title: "类别", field: "job_type"}
+                  , {title: "手机", field: "mobile_number"}
+                  , {title: "身份证", field: "id_number"}
+                  , {title: "邮箱", field: "email"}
+                  , {title: "状态", field: "status"}
+                ]]
+                , singleSelect:  true
+                }).datagrid("loadData", {rows: org_user_list});
+            }
+        );
+         
+    }
+
+
+    $('#btnAddDept').on('click', function()
+    {
+        $('#addDeptForm')[0].reset();
+
+        var selected = $('#tree').treeview('getSelected');
+        var org_name = selected[0].text;
+        var org_id = selected[0].org_id;
+
+        $('#org_name').val(org_name);
+        $('#org_id').val(org_id);
+ 
+
+        var selected = $('#tree').treeview('getSelected');
+        nodeId = selected[0].nodeId;
+          
+        $('#addDept').dialog(
+        {
+            title: selected[0].text + '-新增子部门',
+            buttons: 
+            {
+                "提交": function() {
+                
+                  $.post("/create_department/",
+                    {
+                      name:$('#sub_org_name').val(),
+                      short_name: $('#sub_org_short_name').val(), 
+                      parent_id: $('#org_id').val(),
+                      csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                     },
+                     function(data,status){
+                       if (status == 'success'){
+                         refresh_org_tree(nodeId);     
+                       }
+                     }
+                   );
+                   $(this).dialog("close");
+                }
+            }
+        });
+    });
+   
+     
+    $('#btnModifyDept').on('click', function()
+    {
+        var selected = $('#tree').treeview('getSelected');
+        var org_name = selected[0].text;
+        var org_id = selected[0].org_id;
+        var nodeId = selected[0].nodeId;
+        var org_short_name = selected[0].short_name;
+        $('#sub_org_name').val(org_name);
+        $('#sub_org_short_name').val(org_short_name);
+         
+        var parent_node = $('#tree').treeview('getParent', selected[0]);
+        $('#org_name').val(parent_node.text);
+        $('#org_id').val(parent_node.org_id);
+
+        
+        $('#addDept').dialog(
+        {
+            title: selected[0].text + '-修改部门信息',
+            buttons: 
+            {
+                "提交": function() {
+                  $.post("/update_department/",
+                    {
+                      org_id: org_id,
+                      name:$('#sub_org_name').val(),
+                      short_name: $('#sub_org_short_name').val(), 
+                      parent_id: $('#org_id').val(),
+                      csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                     },
+                     function(data,status){
+                       if (status == 'success'){
+                         refresh_org_tree(nodeId);     
+                       }
+                     }
+                   );
+                   $(this).dialog("close");
+                }
+            }
+        });
+        
+    }); 
+    
+
+    $('#btnDelDept').on('click', function(){              
+        var selected = $('#tree').treeview('getSelected');
+        var parent_node = $('#tree').treeview('getParent', selected[0]); 
+        nodeId = parent_node.nodeId;
+    
+        var url = "/delete_department/?org_id="+ selected[0].org_id ;
+
+        $.get(url ,
+            function(data,status)
+            {
+              if (status == 'success')
+              {
+                refresh_org_tree(nodeId); 
+              }
+            }
+         ); 
+    }); 
+
+
+    $('#btnAddUser').on('click', function()
+    {    
+        $('#addUserForm')[0].reset();
+
+     
+        var selected = $('#tree').treeview('getSelected');
+        nodeId = selected[0].nodeId;
+        org_name = selected[0].text;
+        org_id = selected[0].org_id;
+        $('#parent_org_name').val(org_name);
+        $('#parent_org_id').val(org_id);
+        $('#email').removeAttr("readonly");
+
+        console.log(org_name);
+ 
+          
+        $('#addUser').dialog(
+        {
+            title: selected[0].text + '-新增人员',
+            buttons: 
+            {
+                "提交": function() {
+                  $.post("/create_orguser/",
+                    {
+                      user_name:$('#user_name').val(),
+                      email:$('#email').val(),
+                      mobile_number:$('#mobile_number').val(),
+                      id_number:$('#id_number').val(),
+                      org_id: $('#parent_org_id').val(),
+                      job_title:$('#job_title').val(),
+                      job_type: get_job_type($('#job_type').val()),
+                      role_id: get_role_id($('#role').val()),
+                      csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                    },
+                    function(data,status){
+                       if (status == 'success'){
+                         refresh_org_user_list(org_id);     
+                       }
+                     }
+                   );
+                   $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    $('#btnUpdateUser').on('click', function()
+    {
+        var selected_user = $('#tablewrap').datagrid("getSelections");
+        console.log(selected_user[0].name);
+        $('#user_name').val(selected_user[0].name);
+        $('#email').val(selected_user[0].email);
+        $('#email').attr("readonly","readonly");
+        $('#mobile_number').val(selected_user[0].mobile_number);
+        $('#id_number').val(selected_user[0].id_number);
+        $('#parent_org_id').val(selected_user[0].org_id);
+        var old_parent_org_id = selected_user[0].org_id;
+        $('#parent_org_name').val(selected_user[0].org);
+        
+        $('#job_type').val(selected_user[0].job_type);
+        $('#job_title').val(selected_user[0].job_title);
+        $('#role').val(selected_user[0].role);
+        
+          
+        $('#addUser').dialog(
+        {
+            title: selected_user[0].name + '-修改信息',
+            buttons: 
+            {
+                "提交": function() 
+                {
+                    $.post("/update_orguser/",
+                    {
+                      user_id:selected_user[0].user_id,
+                      user_name:$('#user_name').val(),
+                      email:$('#email').val(),
+                      mobile_number:$('#mobile_number').val(),
+                      id_number:$('#id_number').val(),
+                      org_id:$('#parent_org_id').val(),
+                      old_org_id: old_parent_org_id,
+                      job_title:$('#job_title').val(),
+                      job_type: get_job_type($('#job_type').val()),
+                      role_id: get_role_id($('#role').val()),
+                      csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                    },
+                    function(data,status){
+                       if (status == 'success')
+                       {
+                            var selected = $('#tree').treeview('getSelected');
+                            org_id = selected[0].org_id;
+                            refresh_org_user_list(org_id);
+                        }
+                    });
+                    $(this).dialog("close");
+                }
+            } 
+        });
+
+    });
+  
+    $('#btnDelUser').on('click', function()
+    {
+        var selected = $('#tablewrap').datagrid("getSelections");
+        console.log(selected[0].user_id);
+        var selected_org = $('#tree').treeview('getSelected');
+        var org_id = selected_org[0].org_id;
+        console.log(org_id); 
+        alert("删除用户" + selected[0].name + "!");
+         
+        var url = "/delete_orguser/?user_id="+ selected[0].user_id ;
+
+        $.get(url ,
+            function(data,status)
+            {
+              if (status == 'success')
+              {
+                refresh_org_user_list(org_id); 
+              }
+            }
+         ); 
+    });
+    
+
+    $(document).ready(function(){
+        generate_org_tree();
+        generate_org_user_list({{company_id}});
+
+    });
+
+
+</script>
+
+
+</body>

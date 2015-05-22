@@ -1,0 +1,11 @@
+<h1>登陆</h1>
+<form action="" method="post">
+    {% csrf_token %}
+
+    <table>
+      {{ form.as_table }}
+    </table>
+        <input type="submit" value="登陆">
+</form> 
+
+

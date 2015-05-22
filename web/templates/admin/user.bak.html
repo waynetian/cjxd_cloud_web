@@ -1,0 +1,265 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link href="/static/lib/bootstrap.css" rel="stylesheet">
+    <link href="/static/lib/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/static/lib/bootstrap-dialog.css" rel="stylesheet">
+
+
+
+    <script src="/static/lib/jquery.js" /></script>
+    <script src='/static/lib/bootstrap.js'></script>
+
+
+    <script src='/static/lib/bootstrap-treeview.js'></script>
+    <script src='/static/lib/bootstrap-dialog.js'></script>
+    <script src='/static/lib/jquery.bootstrap.min.js'></script>
+ </head>
+
+
+<body>
+<div class="container">
+    <div class="row"> 
+        <h1>后台管理</h1>
+        <h2>{{ company_name }} - {{ user_name }}</h2>
+    </div>
+    <div class="form-group">
+        <h2>当前部门</h2>
+            <button id='btnAddDept' class="btn btn-primary" >新建部门</button>
+            <button id='btnDelDept' class="btn btn-danger">删除部门</button>
+            <button id='btnModDept' class="btn btn-default">修改部门</button>
+    </div>
+
+
+    <div id="tree"></div>
+
+
+    <hr>
+
+    <div class="form-group">
+    <h2>部门人员</h2>
+        <button id='btnAddUser' class="btn btn-primary">新增人员</button>
+        <button class="btn btn-danger">删除人员</button>
+        <button class="btn btn-default">修改人员</button>
+    </div>
+    <table id="tablewrap2" class="table table-hover"></table>
+</div>
+
+<div id='test' style="display:none" > 
+    <div id='addDept' class="row">
+    <form id='addDeptForm' role='form'> 
+           {% csrf_token %} 
+            <div class="form-group row">
+                <label for='org_name' class="col-sm-2 control-label" >部门名称</label> 
+                <div class="col-sm-4">
+                    <input type='text' class='form-control' id='sub_org_name' placeholder='例如:技术部' /> 
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for='org_short_name' class="col-sm-2 control-label">部门简称</label> 
+                <div class="col-sm-4">
+                    <input type='text' class='form-control' id='sub_org_short_name'/> 
+                </div>
+            </div>
+    </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+
+    function generate_org_tree()
+    {
+        $.get("/get_department_set/?org_id="+{{ company_id }},
+                    function(data,status)
+                    {
+                        var org_tree = eval("("+data+")");
+                        $('#tree').treeview({data: org_tree , 
+                            onNodeSelected: function(event, data){
+                               ; 
+                            }});
+                    }
+        );
+    }
+
+
+    
+    generate_org_tree();
+    /*
+    generate_org_user_list(); 
+
+    function generate_org_user_list()
+    {
+       var rows =[
+        {"name":"item12","role":"Free","mobile":143400},
+        {"name":"item13","role":"Free","mobile":3426919},
+        {"name":"item14","role":"Free","mobile":3343312},
+        {"name":"item15","role":"Free","mobile":120330},
+        {"name":"item16","role":"Not Free","mobile":319492},
+        {"name":"item31","role":"Not Free","mobile":321338},
+        {"name":"item13","role":"Unknow","mobile":342219},
+        {"name":"item54","role":"Unknow","mobile":231000},
+        {"name":"item36","role":"Unknow","mobile":259451},
+        {"name":"item34","role":"Unknow","mobile":449563}
+      ]; 
+
+
+
+        $.get("/get_department_set/?org_id="+{{ company_id }},
+                    function(data,status)
+                    {
+                        var org_tree = eval("("+data+")");
+                        var $editTable = $('#tablewrap2');
+                        $editTable.datagrid({
+                            columns:[[
+                                 {title: "姓名", field: "name",formatter: function(val) {
+              //override default input field
+              return val;
+            }}  
+                                , {title: "状态", field: "role", }
+                                , {title: "部门", field: "role", }
+
+
+                                , {title: "角色", field: "role", readonly: true}
+                                , {title: "手机号", field: "mobile"}
+                                , {title: "职位", field: "mobile"}
+                                , {title: "邮箱", field: "mobile"}
+                                , {title: "身份证", field: "mobile"}
+
+
+
+
+                                ]],
+                            edit: false, 
+                            singleSelect:  true,//false allow multi select
+                            selectedClass: 'danger',  //default: 'success'
+                            selectChange: function(selected, rowIndex, rowData, $row) {
+                            }
+                        }).datagrid("loadData", {rows: rows});  
+                    }
+        );
+
+
+
+    }
+
+    */
+
+
+
+    //var org_tree = {{ org_tree|safe }};
+
+
+    //$('#btnAddUser').on('click', function(){
+    //    var selected = $('#tree').treeview('getSelected');
+    //    org_id = selected[0].org_id; 
+
+
+
+
+    //}); 
+    
+    
+    $('#btnAddDept').on('click', function(){
+        $('#sub_org_name').val("");
+        $('#sub_org_short_name').val("");
+   
+        var selected = $('#tree').treeview('getSelected');
+        nodeId = selected[0].nodeId;
+        
+        var sub_form = get_content();
+        //console.log('name is ***********' + $('#sub_org_name').val());
+          
+        $('#addDept').dialog(
+        {
+            title: selected[0].text + '-新增子部门',
+
+            buttons: 
+            {
+                "提交": function() {
+
+                    $.post("/create_department/",
+                            {
+                                name:$('#sub_org_name').val(),
+                                parent_id: selected[0].org_id,
+                                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+ 
+                            },
+                            function(data,status){
+                               if (status == 'success'){
+                                    var org_new = eval("("+data+")");
+                                    //alert(data);
+
+
+                                    $.get("/get_department_set/?org_id="+{{ company_id }},
+                                        function(data,status){
+    
+                                            var org_tree = eval("("+data+")");
+                                           
+
+                                            $('#tree').treeview({data: org_tree });
+                                            $('#tree').treeview('revealNode', [ nodeId, { silent: true } ]);       
+                                            $('#tree').treeview('expandNode', [ nodeId, { level:1, silent: true } ]);       
+
+                                            $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
+
+                                        }
+                                    ); 
+                                                                    
+                                }
+         
+                            });
+                            $(this).dialog("close");
+                        }
+             
+                    }
+        });
+
+
+    });
+
+    $('#btnDelDept').on('click', function(){              
+
+        var selected = $('#tree').treeview('getSelected');
+        var parent_node = $('#tree').treeview('getParent', selected[0]); 
+        nodeId = parent_node.nodeId;
+    
+        var url = "/delete_department/?org_id="+ selected[0].org_id ;
+        alert("删除部门");
+
+        $.get(url ,
+            function(data,status)
+            {
+                if (status == 'success')
+                {
+                                     $.get("/get_department_set/?org_id="+{{ company_id }},
+                                        function(data,status){
+    
+                                            var org_tree = eval("("+data+")");
+                                           
+
+                                            $('#tree').treeview({data: org_tree  });
+                                            $('#tree').treeview('revealNode', [ nodeId, { silent: true } ]);       
+                                            $('#tree').treeview('expandNode', [ nodeId, { level:1, silent: true } ]);       
+
+                                            $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
+
+                                        }
+                                    ); 
+
+                }
+            }); 
+    });
+
+
+
+</script>
+
+</body>
+
+</html>
