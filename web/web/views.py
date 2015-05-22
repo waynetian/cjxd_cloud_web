@@ -417,7 +417,13 @@ class GetDepartmentUserSetView(TemplateView):
     def get(self, request):
         data = request.GET
         org_id = int(data['org_id'])
-        orguser_set =  APIServer.retrieve_orguser_set(org_id)
+        page_num = 1
+        try:
+            page_num = int(data['page_num'])
+        except KeyError:
+            pass
+
+        orguser_set =  APIServer.retrieve_orguser_set(org_id,page_num)
 
         result_list = []
         for i in orguser_set:
@@ -432,7 +438,7 @@ class GetDepartmentUserSetView(TemplateView):
                  'id_number': i['base_info']['id_number'], \
                  'email': i['base_info']['email'], \
                  'status':i['org2user']['status']}
-            result_list.append(a)    
+            result_list.append(a) 
         import json
         data = json.dumps(result_list)
         return HttpResponse(data) 

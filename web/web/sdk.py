@@ -112,8 +112,8 @@ class APIServer:
     @classmethod
     @ProcessMethod("GET")
     def retrieve_orguser_set(*args, **kwargs):
-        obj, pk = args
-        return  '/orguser/?org_id=%s' %pk
+        obj, pk, page_num = args
+        return  '/orguser/?org_id=%s&page_num=%s' %(pk, page_num)
 
     @classmethod 
     @ProcessMethod('GET')

@@ -124,13 +124,13 @@ LOGGING = {
         'stand_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': '/home/wtian/cjxd_cloud_web/web/log/debug.log',
+            'filename': '/home/wtian/cloud/cjxd_cloud_web/web/log/debug.log',
         },
 
         'sdk_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': '/home/wtian/cjxd_cloud_web/web/log/sdk.log',
+            'filename': '/home/wtian/cloud/cjxd_cloud_web/web/log/sdk.log',
         },
 
 

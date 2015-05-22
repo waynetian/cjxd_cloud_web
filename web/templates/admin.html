@@ -51,7 +51,7 @@
     </nav>
 
 
-<div class="container" style="margin-top: 50px">
+<div class="container" style="margin-top: 20px">
 
      <div class="row">
         <ul class="nav nav-tabs">
@@ -68,7 +68,7 @@
 
 <div id="myTabContent" class="tab-content">
    <div class="tab-pane fade in active" id="home">
-    <div class="container" style="margin-top: 50px">
+    <div class="container" style="margin-top: 20px">
         <div class="col-md-3"> 
         <div class="form-group">
             <button id='btnAddDept' class="btn btn-primary" >新建部门</button>
@@ -76,7 +76,9 @@
             <button id='btnModifyDept' class="btn btn-default">修改部门</button>
         </div>
 
-        <div id="tree" class="row"></div>
+        <div id="tree" class="row"></div> 
+
+
         </div>
     
         <div class="col-md-8 col-md-offset-1">
@@ -91,6 +93,12 @@
             <div class="table-responsive">
                 <table id="tablewrap" class="table table-hover"></table>
             </div>
+
+            <ul class="pager">
+                <li class="previous"><button id="btnLastPage" type="button" class="btn btn-primary" onclick='last_page()'>&larr;上一页</a></button></li>
+                <li class="next"><button id="btnNextPage" type="button" class="btn btn-primary" onclick='next_page()'>下一页&rarr;</button></li>
+            </ul>
+
         </div>
 
         </div>
@@ -230,14 +238,75 @@
 
     </div>
 
+    <input id="page_num" value="1"/>
+    <input id="result_num"/>
+
+
 
 </div>
 
 
 <script type="text/javascript">
 
+    function set_btn_page_attr()
+    {
+        var page_num = $('#page_num').val();
+        $('#btnLastPage').removeAttr("readonly");
+
+
+        if (page_num!=1)
+        {
+            $('#btnLastPage').removeAttr("disabled");
+        }
+        else
+        {
+            $('#btnLastPage').attr("disabled","disabled");
+        }
+
+        console.log($('#result_num').val());
+        var result_num = parseInt($('#result_num').val());
+ 
+        if (result_num < 15)
+        {
+            $('#btnNextPage').attr("disabled","disabled");
+
+        }
+        else
+        {
+            $('#btnNextPage').removeAttr("disabled");
+        }
+
+
+    }
+
+
+    function next_page()
+    {   
+        var selected = $('#tree').treeview('getSelected');
+        org_id = selected[0].org_id;
+
+        $('#page_num').val(''+ (parseInt($('#page_num').val()) + 1));
+
+        refresh_org_user_list(org_id);
+
+
+    }
+    function last_page()
+    {   
+        var selected = $('#tree').treeview('getSelected');
+        org_id = selected[0].org_id;
+        $('#page_num').val(''+ (parseInt($('#page_num').val()) - 1));
+       
+        refresh_org_user_list(org_id);
+
+    }
+
+
+
     function select_dept(type)
-    {   var url = "/get_department_set/?org_id="+ {{ company_id }};
+    {   
+        
+        var url = "/get_department_set/?org_id="+ {{ company_id }};
         $.get( url,
             function(data,status)
             {
@@ -292,11 +361,15 @@
             {
                 var org_tree = eval("("+data+")");
                 console.log('org_tree:' + org_tree);
-                $('#tree').treeview({data: org_tree,
+                $('#tree').treeview({data: org_tree, backColor:"#eee",
                  onNodeSelected: function(event, data) {  
                         var selected = $('#tree').treeview('getSelected');
                         org_id = selected[0].org_id;
                         generate_org_user_list(org_id); 
+                        $('#page_num').val("1");
+                        $('#result_num').val("0");
+                        set_btn_page_attr();
+ 
                     }
 
                 });
@@ -314,7 +387,11 @@
             {
                 var org_user_list = eval("("+data+")");
                 console.log(org_user_list);
-       
+                 $('#result_num').val(org_user_list.length);
+                 console.log("aaaab:" + $('#result_num').val());
+                 set_btn_page_attr();
+ 
+      
             var $table = $('#tablewrap');
             $table.datagrid({
                 columns:[[
@@ -379,7 +456,11 @@
                          onNodeSelected: function(event, data) {  
                             var selected = $('#tree').treeview('getSelected');
                             org_id = selected[0].org_id;
-                            generate_org_user_list(org_id); 
+                            generate_org_user_list(org_id);
+                            $('#page_num').val("1");
+                            $('#result_num').val("0");
+ 
+                            set_btn_page_attr();
                          }
               });
               $('#tree').treeview('revealNode',[nodeId,{silent:true}]); 
@@ -391,30 +472,37 @@
 
     function refresh_org_user_list(org_id)
     {
-        console.log(org_id); 
-        var url = "/get_department_user_set/?org_id="+ org_id ;
+        var page_num =$('#page_num').val();
+       
+        var url = "/get_department_user_set/?org_id=" +org_id+"&page_num="+page_num;
 
         $.get( url,
             function(data,status)
             {
                 var org_user_list = eval("("+data+")");
+
                 console.log(org_user_list);
+                $('#result_num').val(org_user_list.length);
+                console.log("aaaa:" + $('#result_num'));
+
        
                 var $table = $('#tablewrap');
                 $table.datagrid({
                 columns:[[
                     {title: "姓名", field: "name"}
                   , {title: "角色", field: "role"}
-                  , {title: "部门", field: "org"}
+                  //, {title: "部门", field: "org"}
                   , {title: "职务", field: "job_title"}
-                  , {title: "类别", field: "job_type"}
+                  //, {title: "类别", field: "job_type"}
                   , {title: "手机", field: "mobile_number"}
-                  , {title: "身份证", field: "id_number"}
+                  //, {title: "身份证", field: "id_number"}
                   , {title: "邮箱", field: "email"}
                   , {title: "状态", field: "status"}
                 ]]
                 , singleSelect:  true
                 }).datagrid("loadData", {rows: org_user_list});
+                set_btn_page_attr();
+
             }
         );
          
@@ -649,6 +737,14 @@
     
 
     $(document).ready(function(){
+        var page_num = $('#page_num').val();
+        if (page_num==1)
+        {
+            $('#btnLastPage').attr("disabled","disabled");
+        }
+
+
+        disabled="disabled" 
         generate_org_tree();
         generate_org_user_list({{company_id}});
 
