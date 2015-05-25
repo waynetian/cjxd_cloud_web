@@ -443,6 +443,20 @@ class GetDepartmentUserSetView(TemplateView):
         data = json.dumps(result_list)
         return HttpResponse(data) 
 
+class GetFirstLevelOrgUserSetView(TemplateView):
+
+    def get(self, request):
+        data = request.GET
+        org_id = int(data['org_id'])
+
+        orguser_set =  APIServer.retrieve_first_level_orguser_set(org_id)
+        import json
+        data = json.dumps(orguser_set)
+        return HttpResponse(data) 
+
+
+
+
 
 
 class WorkView(TemplateView):
@@ -484,11 +498,6 @@ class AdminView(TemplateView):
         t = TemplateResponse(request, 'admin.html', para)
         return t
 
-
-
-
- 
-
  
 class LogoutView(TemplateView):
     def get(self, request):
@@ -505,4 +514,32 @@ class LogoutView(TemplateView):
         except KeyError:
             pass
         return HttpResponseRedirect('/') 
+
+
+
+class ContactMainView(TemplateView):
+    def get(self, request):
+        orguser = request.session.get('orguser', None)
+        if orguser is None:
+            return HttpResponseRedirect('/') 
+        data = request.GET
+        org_id = data.get('org_id', None)
+        if org_id is None:
+            org_id = orguser['org']['domain_id'] 
+        user_name = orguser['base_info']['name']
+        role_id = orguser['role']['role_id']
+        org2user = orguser['org2user']
  
+        para = { \
+            'user_name': user_name,
+            'org_id': org_id, 
+            'role_id': role_id,
+        }
+
+
+        t = TemplateResponse(request, 'contact_main.html', para)
+        return t
+
+ 
+
+

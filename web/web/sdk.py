@@ -115,6 +115,14 @@ class APIServer:
         obj, pk, page_num = args
         return  '/orguser/?org_id=%s&page_num=%s' %(pk, page_num)
 
+    @classmethod
+    @ProcessMethod("GET")
+    def retrieve_first_level_orguser_set(*args, **kwargs):
+        obj, pk = args
+        return  '/orguser/?org_id=%s&scope' %pk
+
+
+
     @classmethod 
     @ProcessMethod('GET')
     def user_login(*args, **kwargs):

@@ -45,7 +45,7 @@
    <div class="container metro" style="margin-top: 70px">
         <div class="row">
             <div class="col-sm-4 col-md-2">
-                 <div class="tile bg-darkRed fg-white">
+                 <div class="tile bg-darkRed fg-white" onclick='appview("contact")'>
                     <div class="tile-content iconic">   
                         <span class="icon mif-contacts-dialer"></span>
                         <span class="tile-label">通讯录</span>
@@ -105,5 +105,10 @@
 
     </div>
 
-
+<script>
+function appview(app)
+{
+    window.location.href="/"+app; 
+}
+</script>
 </body>

@@ -35,5 +35,14 @@ urlpatterns = [
 
     url(r'^get_department_user_set/', GetDepartmentUserSetView.as_view(), name='get_department_user_set'),
 
+    url(r'^get_first_level_org_user_set/', GetFirstLevelOrgUserSetView.as_view(), name='get_first_level_user_set'),
+
+
+
+
+
+
+    url(r'^contact/', ContactMainView.as_view(), name='contact_main')
+
 
 ]

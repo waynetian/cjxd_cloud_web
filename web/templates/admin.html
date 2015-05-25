@@ -69,15 +69,17 @@
 <div id="myTabContent" class="tab-content">
    <div class="tab-pane fade in active" id="home">
     <div class="container" style="margin-top: 20px">
+        
         <div class="col-md-3"> 
+        <div class="row">
         <div class="form-group">
             <button id='btnAddDept' class="btn btn-primary" >新建部门</button>
             <button id='btnDelDept' class="btn btn-danger">删除部门</button>
             <button id='btnModifyDept' class="btn btn-default">修改部门</button>
         </div>
-
+        </div>
         <div id="tree" class="row"></div> 
-
+        
 
         </div>
     
@@ -396,7 +398,7 @@
             $table.datagrid({
                 columns:[[
                     {title: "姓名", field: "name"}
-                  , {title: "角色", field: "role"}
+                  //, {title: "角色", field: "role"}
                   //, {title: "部门", field: "org"}
                   , {title: "职务", field: "job_title", hidden:true}
                   //, {title: "类别", field: "job_type"}
@@ -490,7 +492,7 @@
                 $table.datagrid({
                 columns:[[
                     {title: "姓名", field: "name"}
-                  , {title: "角色", field: "role"}
+                  //, {title: "角色", field: "role"}
                   //, {title: "部门", field: "org"}
                   , {title: "职务", field: "job_title"}
                   //, {title: "类别", field: "job_type"}
